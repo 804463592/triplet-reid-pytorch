@@ -11,7 +11,7 @@ import os
 import logging
 import time
 
-from backbones import EmbedNetwork
+from backbone import EmbedNetwork
 from loss import TripletLoss
 from selector import BatchHardTripletSelector
 from batch_sampler import RegularBatchSampler
@@ -19,17 +19,16 @@ from datasets.Market1501 import Market1501
 from optimizer import AdamOptimWrapper
 
 
-
 def train():
     ## logging
-    FORMAT = '%(levelname)s %(filename)s: %(message)s'
+    FORMAT = '%(levelname)s %(filename)s:%(lineno)4d: %(message)s'
     logging.basicConfig(level=logging.INFO, format=FORMAT, stream=sys.stdout)
     logger = logging.getLogger(__name__)
 
     ## model and loss
     net = EmbedNetwork().cuda()
     net = nn.DataParallel(net)
-    triplet_loss = TripletLoss(margin = None).cuda() # TODO: add a margin for this
+    triplet_loss = TripletLoss(margin = None).cuda() # no margin means soft-margin
 
     ## optimizer
     optim = AdamOptimWrapper(net.parameters(), lr = 3e-4, t0 = 15000, t1 = 25000)
